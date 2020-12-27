@@ -52,6 +52,9 @@ def creat_user(surname, givenname, mailsufix, newUserPassword):
     #create_response = create_result.json()
     #print(create_response)
     print(userDisplayname)
+    user_id = create_response.json().get('id')
+
+    graph_url = 'https://graph.microsoft.com/v1.0/users/{id}/assignLicense'.,foirmat(id=user_id)
 
 
 creat_user("test", "Stefan", "@M365x293953.onmicrosoft.com", "ewtwerwrw123!!")
