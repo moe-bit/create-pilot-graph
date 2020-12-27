@@ -1,4 +1,3 @@
-#import libraries
 import requests
 import json
 import pandas as pd
@@ -30,35 +29,29 @@ token_data = {
 token_r = requests.post(token_url, data=token_data)
 token = token_r.json().get('access_token')
 
-
-#print(token)
-
 headers = {
  'Authorization': 'Bearer {}'.format(token)
 }
 
-# Use the token using microsoft graph endpoints
-users_url = 'https://graph.microsoft.com/v1.0/users/{}'.format(admin_mail)
-
-users_url_all = 'https://graph.microsoft.com/v1.0/users'
-
-user_response_data = json.loads(requests.get(users_url_all, headers=headers).text)
-
-#print(user_response_data)
-
-# create user account
-user_information = {
-  "accountEnabled": True,
-  "displayName": "Test User",
-  "mailNickname": "testuser",
-  "userPrincipalName": "testuser@M365x293953.onmicrosoft.com",
-  "passwordProfile" : {
-    "forceChangePasswordNextSignIn": False,
-    "password": "Test123456789!test"
+def creat_user(surname, givenname, mailsufix, newUserPassword):
+    userDisplayname = "{a_given} {a_surname}".format(a_given=givenname,a_surname=surname)
+    # create user account
+    user_information = {
+    "accountEnabled": True,
+    "displayName": "Test User",
+    "mailNickname": "testuser",
+    "userPrincipalName": "testuser{}".format(mailsufix) ,
+    "passwordProfile" : {
+        "forceChangePasswordNextSignIn": False,
+        "password": newUserPassword
+        }
     }
-}
 
-graph_url = 'https://graph.microsoft.com/v1.0/users/'
-#create_result = requests.post(graph_url, headers=headers, json=user_information)
-#create_response = create_result.json()
-#print(create_response)
+    #graph_url = 'https://graph.microsoft.com/v1.0/users/'
+    #create_result = requests.post(graph_url, headers=headers, json=user_information)
+    #create_response = create_result.json()
+    #print(create_response)
+    print(userDisplayname)
+
+
+creat_user("test", "Stefan", "@M365x293953.onmicrosoft.com", "ewtwerwrw123!!")
