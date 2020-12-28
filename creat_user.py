@@ -33,7 +33,7 @@ headers = {
  'Authorization': 'Bearer {}'.format(token)
 }
 
-def creat_user(surname, givenname, mailsufix, newUserPassword):
+def create_user(surname, givenname, mailsufix, newUserPassword):
     userDisplayname = "{a_given} {a_surname}".format(a_given=givenname,a_surname=surname)
     # create user account
     user_information = {
@@ -52,9 +52,24 @@ def creat_user(surname, givenname, mailsufix, newUserPassword):
     #create_response = create_result.json()
     #print(create_response)
     print(userDisplayname)
-    user_id = create_response.json().get('id')
+    #user_id = create_response.json().get('id')
 
-    graph_url = 'https://graph.microsoft.com/v1.0/users/{id}/assignLicense'.,foirmat(id=user_id)
+    assign_licence("fef3ca2d-1aae-488a-bb7b-15f234b8c2c9")
 
+def assign_licence(user_id):
+    licence_information = {
+    "addLicenses": [
+        {
+        "disabledPlans": [],
+        "skuId": "4b585984-651b-448a-9e53-3b10f069cf7f"
+        }
+    ],
+    "removeLicenses": []
+    }
 
-creat_user("test", "Stefan", "@M365x293953.onmicrosoft.com", "ewtwerwrw123!!")
+    licence_url = 'https://graph.microsoft.com/v1.0/users/{id}/assignLicense'.format(id=user_id)
+    licence_result = requests.post(licence_url, headers=headers, json=licence_information)
+    licence_response = licence_result.json()                                                        #Office Location setzten: https://docs.microsoft.com/de-de/archive/blogs/dsadsi/did-you-get-a-license-assignment-cannot-be-done-for-user-with-invalid-usage-location-error-when-applying-a-license-via-graph-api
+    print(licence_response)
+
+create_user("test", "Stefan", "@M365x293953.onmicrosoft.com", "ewtwerwrw123!!")
