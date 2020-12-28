@@ -5,6 +5,7 @@ create pilot graph is a project of the WOC 2020/21 combining Microsoft Graph API
 ## The main goal of this project:
 - Create new office user accounts form a CSV Import via MS Graph API
 
+
 ## Project steps:
 1. [X] ~~Connect to MS Graph API~~
 1. [X] ~~Create Useraccount~~
@@ -15,6 +16,7 @@ create pilot graph is a project of the WOC 2020/21 combining Microsoft Graph API
 1. [ ] Neu angelegte User zu Gruppen hinzufügen
 1. [ ] UI für Import + ini erstellen
 
+
 ## Standard Functions:
 | Function | Description | Link |
 | ------ | ------ | ------ |
@@ -22,3 +24,7 @@ create pilot graph is a project of the WOC 2020/21 combining Microsoft Graph API
 
 
 ## Project setup
+
+
+## Useful links
+Links that helped us:
