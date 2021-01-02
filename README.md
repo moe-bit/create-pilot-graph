@@ -35,7 +35,10 @@ create pilot graph is a project of the WOC 2020/21 combining Microsoft Graph API
 Links that helped us:
 
 [Get Users](https://docs.microsoft.com/de-de/graph/api/user-list?view=graph-rest-1.0&tabs=http#code-try-29)
+
 [Query parameter](https://docs.microsoft.com/en-us/graph/query-parameters?context=graph%2Fapi%2F1.0&view=graph-rest-1.0#filter-parameter)
+
 [Use count in query](https://developer.microsoft.com/en-us/office/blogs/build-advanced-queries-with-count-filter-search-and-orderby/)
+
 [Acess values in json python](https://stackoverflow.com/questions/11241583/python-accessing-data-in-json-object)
 
