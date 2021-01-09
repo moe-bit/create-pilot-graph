@@ -8,17 +8,16 @@ import string
 # Read in config data
 config = configparser.ConfigParser()
 config.read('ms_graph.ini')
-if 'DEFAULT' in config:
-    app_id = str(config.get('DEFAULT', 'APP_ID', fallback="There is no app id"))
-    client_secret = str(config.get('DEFAULT', 'CLIENT_SECRET', fallback="There is no client secret"))
-    tenant_id = str(config.get('DEFAULT', 'TENANT_ID', fallback="There is no tenant id"))
-    #test_id = str(config.get('DEFAULT', 'TEST_ID', fallback="There is no test id"))
-
+if 'CONNECTION' in config:
+    app_id = str(config.get('CONNECTION', 'APP_ID', fallback="There is no app id"))
+    client_secret = str(config.get('CONNECTION', 'CLIENT_SECRET', fallback="There is no client secret"))
+    tenant_id = str(config.get('CONNECTION', 'TENANT_ID', fallback="There is no tenant id"))
+    
     admin_mail = str(config.get('TEST_DATA', 'ADMIN_MAIL', fallback="There is no test admin mail"))
     domain = str(config.get('TEST_DATA', 'DOMAIN', fallback="There is no test domain"))
-    jobTitle = str(config.get('TEST_DATA', 'JOBTITLE', fallback="There is no test jobTitle"))
+    invitor = str(config.get('TEST_DATA', 'INVITOR', fallback="There is no test invitor"))
 else:
-    print('DEFAULT is not found')
+    print('CONNECTION parameters are not found')
 
 
 
@@ -74,9 +73,8 @@ def uspExist(userPrincipalName):
     # check if result is > 0
     return user_response_data['@odata.count'] > 0
 
-
 # Creat Azure AD User
-def create_user(surname, givenname, domain):
+def create_user(surname, givenname, domain, privateMail):
     correctSur = checkName(surname)
     correctGiven = checkName (givenname)
     userPrincipalName = create_UsP(correctSur, correctGiven, domain)
@@ -96,9 +94,9 @@ def create_user(surname, givenname, domain):
         "givenName" : correctGiven,
         "displayName": userDisplayName,
         "mailNickname": mailNickname,
-        #"jobTitle": jobTitle,
         "mail" : userPrincipalName,
         "userPrincipalName": userPrincipalName,
+        "usageLocation": "DE",
         "passwordProfile" : {
             "forceChangePasswordNextSignIn": False,
             "password": createdPassword
@@ -109,14 +107,18 @@ def create_user(surname, givenname, domain):
         graph_url = 'https://graph.microsoft.com/v1.0/users/'
         create_result = requests.post(graph_url, headers=headers, json=user_information)
         create_response = create_result.json()
-        #print(create_response)
+        print(create_response)
         
         user_id = create_response['id']
 
         print(user_id)
 
-        #assign_licence(user_id)
+        if assign_licence(user_id):
+            sendInvitationMail(privateMail, createdPassword, correctGiven, userPrincipalName)
+        else:
+            print("No Mail sended!")
 
+# Assing licence to a user: It's important to set the usage location before
 def assign_licence(user_id):
     licence_information = {
     "addLicenses": [
@@ -130,17 +132,60 @@ def assign_licence(user_id):
 
     licence_url = 'https://graph.microsoft.com/v1.0/users/{id}/assignLicense'.format(id=user_id)
     licence_result = requests.post(licence_url, headers=headers, json=licence_information)
-    licence_response = licence_result.json()                                                        #Office Location setzten: https://docs.microsoft.com/de-de/archive/blogs/dsadsi/did-you-get-a-license-assignment-cannot-be-done-for-user-with-invalid-usage-location-error-when-applying-a-license-via-graph-api
+    licence_response = licence_result.json()                                                        
+    
     print(licence_response)
+    return True
 
-
-
+# The application sends an invitation mail from a specified account to the new account 
+def sendInvitationMail(privateMail, password, givenName, userPrincipalName):
+    htmlMail = """\
+        <html>
+            <body>
+            <p>Hallo {name},</p>
+            <p>wir d&uuml;rfen dich herzlich bei uns willkommen hei&szlig;en. Hier sind deine Zugangsdaten:</p>
+            <p>&nbsp;</p>
+            <p><strong>Benutzername</strong>: {username} </p>
+            <p><strong>Passwort</strong>: {userPwd} </p>
+            <p>&nbsp;</p>
+            <p>Du kannst dich hier anmelden: <a href="http://www.office.com">www.office.com</a></p>
+            <p>&nbsp;</p>
+            <p>Gru&szlig;,</p>
+            <p>Bereichsleitung IT</p>
+            </body>
+        </html>
+        """.format(name=givenName, username=userPrincipalName, userPwd=password)
     
     
-    
+    mail = {
+    "message": {
+        "subject": "Testmail",
+        "body": {
+        "contentType": "html",
+        "content": htmlMail
+        },
+        "toRecipients": [
+        {
+            "emailAddress": {
+            "address": privateMail
+            }
+        }
+        ],
+    },
+    "saveToSentItems": "false"
+    }   
+
+    mailGraphUrl = 'https://graph.microsoft.com/v1.0/users/{}/sendMail'.format(invitor)
+    mailResult = requests.post(mailGraphUrl, headers=headers, json=mail)
+    print(mailResult)
 
 
-create_user("test08", "Stefan", domain)
+
+
+# Test output
+#create_user("test12", "Stefan", domain)
 #uspExist('stefan.test02@M365x293953.onmicrosoft.com')
 #print(uspExist('s'))
 #print(uspExist('y'))
+
+create_user("Test","Peter", domain, "test@gmx.de")

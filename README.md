@@ -12,23 +12,26 @@ create pilot graph is a project of the WOC 2020/21 combining Microsoft Graph API
 1. [X] ~~Lizenz einem User zuweisen~~
 1. [X] ~~Generate a password~~
 1. [X] ~~check if userPrincipalName already exists~~
-1. [ ] Location für Lizenzzuweisung per PATCH setzen
+1. [X] Location für Lizenzzuweisung per PATCH setzen
+1. [X] Einladungsmail versenden
 1. [ ] Überprüfen welche Parameter beim erstellen des Users ausgefüllt seien müssen (private Mail für e-Mail Versand/ JobTitle/ preferedLanguage)
 1. [ ] CSV einlesen
-1. [ ] CSV validieren -> passt Vorname/ Nachname/ private E-Mail Format 
-1. [ ] Einladungsmail versenden
+1. [ ] CSV validieren -> passt Vorname/ Nachname/ private E-Mail Format
+1. [ ] Code aufhübschen 
 1. [ ] Neu angelegte User zu Gruppen hinzufügen
 1. [ ] UI für Import + ini erstellen
 
 
-## Standard Functions:
+## Standard API Functions:
 | Function | Description | Link |
 | ------ | ------ | ------ |
 | createUser | Creates a Azure AD user | [Link]() |
+| sendInvitationMail| Sends a mail from an application. You need to set an account as a sender | [Link]() |
   
 
 
 ## Project setup
+
 
 
 ## Useful links
