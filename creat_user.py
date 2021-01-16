@@ -4,6 +4,7 @@ import pandas as pd
 import configparser
 import secrets
 import string
+import csv 
 
 # Read in config data
 config = configparser.ConfigParser()
@@ -16,6 +17,7 @@ if 'CONNECTION' in config:
     admin_mail = str(config.get('TEST_DATA', 'ADMIN_MAIL', fallback="There is no test admin mail"))
     domain = str(config.get('TEST_DATA', 'DOMAIN', fallback="There is no test domain"))
     invitor = str(config.get('TEST_DATA', 'INVITOR', fallback="There is no test invitor"))
+    csv_path = str(config.get('TEST_DATA', 'CSV_PATH', fallback="There is no path"))
 else:
     print('CONNECTION parameters are not found')
 
@@ -188,4 +190,8 @@ def sendInvitationMail(privateMail, password, givenName, userPrincipalName):
 #print(uspExist('s'))
 #print(uspExist('y'))
 
-create_user("Test","Peter", domain, "test@gmx.de")
+with open(csv_path, mode='r', encoding='utf-8-sig') as csv_file:
+    csv_reader = csv.DictReader(csv_file, delimiter=';')
+
+    for row in csv_reader:
+        create_user(row['surname'], row['givenname'], domain, row['privatemail'])
