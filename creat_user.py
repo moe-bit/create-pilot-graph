@@ -48,19 +48,43 @@ def generatePassword():
 
     return password
 
+def remove_umlaut(string):
+    """
+    Removes umlauts from strings and replaces them with the letter+e convention
+    :param string: string to remove umlauts from
+    :return: unumlauted string
+    """
+    string = string.replace('ä','ae')
+    string = string.replace('ö','oe')
+    string = string.replace('Ä','Ae')
+    string = string.replace('Ö','Oe')
+    string = string.replace('ß','ss')
+    string = string.replace('Ü','Ue')
+    string = string.replace('ü','ue')
+
+    return string
+
 # Checks if a given name matches requierements and format it nicely
 def checkName(name):
-    correctName = name.title()
+    changed_name = remove_umlaut(name)
+    correctName = changed_name.title()
     return correctName
 
 # Create a username
-def createUserName(surname, givenname):
-    username = '{person_givenname}.{person_surname}'.format(person_givenname=givenname, person_surname=surname)
+def createUserName(surname, givenname, middlename="None"):
+    if middlename not "None":
+        username = '{person_givenname}-{person_middlename}.{person_surname}'.format(person_givenname=givenname, person_middlename=middlename, person_surname=surname)
+    else:    
+        username = '{person_givenname}.{person_surname}'.format(person_givenname=givenname, person_surname=surname)
     return username
 
 # Creat UserPrincipalName 
-def create_UsP(surname, givenname, domain):
-    username = createUserName(surname, givenname)
+def create_UsP(surname, givenname, middlename="None", domain):
+    if middlename not "None":
+        username = createUserName(surname, givenname, middlename)
+    else:
+        username = createUserName(surname, givenname)
+    
     lowerUsername = username.lower()
     usp = '{uspPrefix}{domain}'.format(uspPrefix=lowerUsername, domain=domain)
 
@@ -76,10 +100,14 @@ def uspExist(userPrincipalName):
     return user_response_data['@odata.count'] > 0
 
 # Creat Azure AD User
-def create_user(surname, givenname, domain, privateMail):
+def create_user(surname, givenname, middlename="None", domain, privateMail):
     correctSur = checkName(surname)
     correctGiven = checkName (givenname)
-    userPrincipalName = create_UsP(correctSur, correctGiven, domain)
+    if middlename not "None":
+        correctMiddle = checkName (middlename)
+        userPrincipalName = create_UsP(correctSur, correctGiven, correctMiddle, domain)
+    else:
+        userPrincipalName = create_UsP(correctSur, correctGiven, domain)
 
     if uspExist(userPrincipalName):
         print("usp = {} already exists!".format(userPrincipalName))
@@ -89,7 +117,10 @@ def create_user(surname, givenname, domain, privateMail):
         createdPassword = generatePassword()
 
         userDisplayName = "{person_given} {person_surname}".format(person_given=correctGiven, person_surname=correctSur)
-        
+        print(userDisplayName)
+        print(userPrincipalName)
+
+
         user_information = {
         "accountEnabled": True,
         "surName" : correctSur,
@@ -114,11 +145,13 @@ def create_user(surname, givenname, domain, privateMail):
         user_id = create_response['id']
 
         print(user_id)
-
+        """
         if assign_licence(user_id):
             sendInvitationMail(privateMail, createdPassword, correctGiven, userPrincipalName)
         else:
             print("No Mail sended!")
+
+        """
 
 # Assing licence to a user: It's important to set the usage location before
 def assign_licence(user_id):
@@ -182,16 +215,7 @@ def sendInvitationMail(privateMail, password, givenName, userPrincipalName):
     print(mailResult)
 
 
-
-
-# Test output
-#create_user("test12", "Stefan", domain)
-#uspExist('stefan.test02@M365x293953.onmicrosoft.com')
-#print(uspExist('s'))
-#print(uspExist('y'))
-
 with open(csv_path, mode='r', encoding='utf-8-sig') as csv_file:
     csv_reader = csv.DictReader(csv_file, delimiter=';')
-
     for row in csv_reader:
-        create_user(row['surname'], row['givenname'], domain, row['privatemail'])
+        create_user(row['surname'], row['givenname'], row['middlename'], domain, row['privatemail'])
