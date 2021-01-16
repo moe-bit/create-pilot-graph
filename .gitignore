@@ -127,3 +127,4 @@ dmypy.json
 
 # ini
 *.ini
+!default_ini.ini
