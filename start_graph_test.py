@@ -7,7 +7,7 @@ import configparser
 # Read in config data
 config = configparser.ConfigParser()
 config.read('ms_graph.ini')
-if 'DEFAULT' in config:
+if 'CONNECTION' in config:
     app_id = str(config.get('DEFAULT', 'APP_ID', fallback="There is no app id"))
     client_secret = str(config.get('DEFAULT', 'CLIENT_SECRET', fallback="There is no client secret"))
     tenant_id = str(config.get('DEFAULT', 'TENANT_ID', fallback="There is no tenant id"))
